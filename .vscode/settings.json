@@ -1,0 +1,21 @@
+{
+    "cSpell.words": [
+        "argmax",
+        "ascontiguousarray",
+        "BCHW",
+        "convh",
+        "convw",
+        "cuda",
+        "dtype",
+        "imshow",
+        "matplotlib",
+        "minigrid",
+        "optim",
+        "pyplot",
+        "relu",
+        "torchvision",
+        "unsqueeze",
+        "xlabel",
+        "ylabel"
+    ]
+}
