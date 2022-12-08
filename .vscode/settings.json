@@ -17,6 +17,7 @@
         "torchvision",
         "unsqueeze",
         "xlabel",
-        "ylabel"
+        "ylabel",
+        "yscale"
     ]
 }
