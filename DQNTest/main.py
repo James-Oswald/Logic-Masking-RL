@@ -13,8 +13,8 @@ import torch.optim as optim
 from DQN import device, MinigridDQN, ReplayMemory, observationToTensor, Transition
 
 #Hyperparameters
-num_episodes = 1000    # Number of episodes
-BATCH_SIZE = 512      # Number of experiences to train on
+num_episodes = 300    # Number of episodes
+BATCH_SIZE = 128      # Number of experiences to train on
 MEMORY_SIZE = 60000    # Size of the replay memory
 GAMMA = 0.999         # Discount in (0, 1): 0 -> Prioritize short term rewards, 1 -> Prioritize Long Term
 
@@ -68,9 +68,10 @@ if __name__ == "__main__":
             #Perform the action
             nextObservation, reward, terminated, truncated, _ = env.step(action.item())
             episodeReward += reward
-            nextObservationTensor = None if terminated or truncated else observationToTensor(env, nextObservation)
-            #Add the action to our memory
             rewardTensor = torch.tensor(reward, device=device, dtype=torch.float)
+            nextObservationTensor = None if terminated or truncated else observationToTensor(env, nextObservation)
+            
+            #Add the action to our memory
             memory.append(observationTensor, action, nextObservationTensor, rewardTensor)
             observationTensor = nextObservationTensor #Progress a step
 
@@ -131,6 +132,7 @@ if __name__ == "__main__":
                 break
             
             if stepCounter % TARGET_UPDATE == 0:
+                print("Target Update")
                 target_net.load_state_dict(policy_net.state_dict())
 
             episodeLength += 1
