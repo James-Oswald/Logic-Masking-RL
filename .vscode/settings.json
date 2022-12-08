@@ -7,6 +7,7 @@
         "convw",
         "cuda",
         "dtype",
+        "Hyperparameters",
         "imshow",
         "matplotlib",
         "minigrid",
