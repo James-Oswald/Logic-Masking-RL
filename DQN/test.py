@@ -7,7 +7,7 @@ from minigrid.wrappers import FullyObsWrapper, StateBonus
 from DQN import observationToTensor, MinigridDQN, device
 
 if __name__ == "__main__":
-    env = gym.make("MiniGrid-Empty-5x5-v0", render_mode="human")
+    env = FullyObsWrapper(gym.make("MiniGrid-Dynamic-Obstacles-Random-6x6-v0", max_steps=15, render_mode="human"))
     agent = MinigridDQN(env).to(device)
     agent.load_state_dict(torch.load("trainedDQN.pt"))
 

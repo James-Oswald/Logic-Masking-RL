@@ -40,7 +40,7 @@ class MinigridDQN(torch.nn.Module):
         [Q(s, action1), Q(s, action2), Q(s, action3)]
     '''
 
-    def __init__(self, env:gym.Env, hiddenSizes:"list[int]" = [20]) -> None:
+    def __init__(self, env:gym.Env, hiddenSizes:"list[int]" = [256, 256, 100]) -> None:
         super(MinigridDQN, self).__init__()
         self.directionShape = env.observation_space["direction"].n       #Number of directions (flattened into a one hot encoding)
         self.viewShape = math.prod(env.observation_space["image"].shape) #Number of items in observation space

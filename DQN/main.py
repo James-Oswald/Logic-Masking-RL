@@ -13,25 +13,26 @@ import torch.optim as optim
 from DQN import device, MinigridDQN, ReplayMemory, observationToTensor, Transition
 
 #Hyperparameters
-num_episodes = 300    # Number of episodes
-BATCH_SIZE = 128      # Number of experiences to train on
-MEMORY_SIZE = 60000    # Size of the replay memory
+printUpdateEpisodes = 100
+num_episodes = 10000   # Number of episodes
+BATCH_SIZE = 256      # Number of experiences to train on
+MEMORY_SIZE = 20000    # Size of the replay memory
 GAMMA = 0.999         # Discount in (0, 1): 0 -> Prioritize short term rewards, 1 -> Prioritize Long Term
 
 #Should ideally be pretty big
-TARGET_UPDATE = 1000    # Number of optimization steps before updating the target net
+TARGET_UPDATE = 1500    # Number of optimization steps before updating the target net
 
 #epsilon greedy policy Hyperparameters
 EPS_START = 0.9     # Starting epsilon (random action chance)
 EPS_END = 0.05      # Ending epsilon (random action chance)
-EPS_DECAY = 5000     # Rate at which epsilon decays during training
+EPS_DECAY = 20000     # Rate at which epsilon decays during training
 
 optimizerType = optim.Adam #Type of optimizer
 lossFunc = torch.nn.SmoothL1Loss()
 
 
 #Main objects
-env = gym.make("MiniGrid-Empty-5x5-v0", max_steps=1000)    #Environment 
+env = FullyObsWrapper(gym.make("MiniGrid-Dynamic-Obstacles-Random-6x6-v0", max_steps=15))    #Environment 
 memory = ReplayMemory(MEMORY_SIZE)
 
 policy_net = MinigridDQN(env).to(device)    #Agent Policy Net
@@ -104,8 +105,8 @@ if __name__ == "__main__":
                 #predictedVs are the V(s+1) = max_a(Q(s+1, a))
                 predictedVs = torch.zeros(BATCH_SIZE, device=device)
 
-                # [[Q(s1, a1), Q(s1, a2), ...],        .max(1) = 
-                #  [Q(s2, a1), Q(s2, a2), ...], ...],
+                # [[Q(s1, a1), Q(s1, a2), ...],        .max(1)[0] = [max([Q(s1, a1), Q(s1, a2), ...]),
+                #  [Q(s2, a1), Q(s2, a2), ...], ...],                max([Q(s2, a1), Q(s2, a2), ...]), ...]
                 predictedVs[endStateMaskTensor] = target_net(nonEndNextObservationTensors).max(1)[0].detach()
                 
                 #The expected total reward
@@ -122,21 +123,23 @@ if __name__ == "__main__":
                 for param in policy_net.parameters():
                     param.grad.data.clamp_(-1, 1)
                 optimizer.step()
+            
+            #Copy our policy net to our target net
+            if stepCounter % TARGET_UPDATE == 0:
+                #print("Target Update")
+                target_net.load_state_dict(policy_net.state_dict())
+
+            episodeLength += 1
 
             #We've lost or won
             if terminated or truncated:
-                lossString = sum(episodeLosses)/len(episodeLosses) if len(episodeLosses) != 0 else 0
-                print(f"{episode}, {episodeLength:>4}, {episodeReward:.2f}, {epsilonThreshold:.2f}, {lossString}")
+                if episode % printUpdateEpisodes == 0: 
+                    lossString = sum(episodeLosses)/len(episodeLosses) if len(episodeLosses) != 0 else 0
+                    print(f"Episode: {episode}, Len:{episodeLength:>4}, Reward:{episodeReward:.2f}, Epsilon:{epsilonThreshold:.2f}, Loss:{lossString}")
                 episodeLengths.append(episodeLength)
                 episodeRewards.append(episodeReward)
                 break
             
-            if stepCounter % TARGET_UPDATE == 0:
-                print("Target Update")
-                target_net.load_state_dict(policy_net.state_dict())
-
-            episodeLength += 1
-    
     env.close()
     torch.save(target_net.state_dict(), "trainedDQN.pt")
     plt.plot(episodeRewards)
