@@ -1,5 +1,6 @@
 {
     "cSpell.words": [
+        "Alshiekh",
         "argmax",
         "ascontiguousarray",
         "BCHW",
@@ -7,20 +8,27 @@
         "convw",
         "cuda",
         "dtype",
+        "Eykholt",
         "gridworld",
         "Hyperparameters",
+        "ICSI",
         "imshow",
+        "ISCI",
         "matplotlib",
+        "Matthieu",
+        "Minh",
         "minigrid",
         "optim",
         "polyfit",
         "pyplot",
         "relu",
+        "ticklabel",
         "torchvision",
         "uncompromised",
         "unsqueeze",
         "xlabel",
         "ylabel",
-        "yscale"
+        "yscale",
+        "Zahavy"
     ]
 }
