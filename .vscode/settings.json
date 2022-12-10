@@ -17,6 +17,7 @@
         "pyplot",
         "relu",
         "torchvision",
+        "uncompromised",
         "unsqueeze",
         "xlabel",
         "ylabel",
